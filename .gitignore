@@ -1,4 +1,5 @@
-env/
-.env
-template.zip
-.DS_Store
+__pycache__/
+*.pyc
+.venv/
+DSW-*-export.json
+*.zip

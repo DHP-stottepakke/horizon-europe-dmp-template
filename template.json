@@ -1,22 +1,16 @@
 {
-    "templateId": "horizon-europe-dmp",
-    "organizationId": "dsw",
-    "version": "1.21.1",
-    "name": "Horizon Europe DMP",
-    "description": "Data Management Plan according to the Horizon Europe template",
+    "templateId": "horizon-europe-dmp-norway",
+    "organizationId": "research.data.no",
+    "version": "1.0.0",
+    "name": "Horizon Europe DMP (Norway)",
+    "description": "Data Management Plan according to the Horizon Europe template, based on the Norwegian generic knowledge model",
     "license": "Apache-2.0",
-    "metamodelVersion": "18.0",
+    "metamodelVersion": "18.1",
     "allowedPackages": [
         {
-            "orgId": "dsw",
-            "kmId": "root",
-            "minVersion": "2.7.0",
-            "maxVersion": null
-        },
-        {
-            "orgId": "dsw",
-            "kmId": "lifesciences",
-            "minVersion": "2.7.0",
+            "orgId": "research.data.no",
+            "kmId": "norway-generic",
+            "minVersion": "1.2.1",
             "maxVersion": null
         }
     ],

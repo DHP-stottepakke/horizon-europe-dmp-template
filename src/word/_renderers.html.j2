@@ -1,0 +1,215 @@
+{#-
+  Structured question/answer renderers for the MS Word output.
+
+  Same structure as src/_renderers.html.j2, but pandoc drops internal anchors and
+  most inline markup on the way to docx, so item references are rendered as plain
+  text and list tables carry no styling hooks.
+-#}
+
+{#- Anchors already rendered, so a question listed in two sections appears once. -#}
+{%- set renderedKeys = [] -%}
+
+{%- macro renderByKey(qidx, key) -%}
+  {%- set entry = qidx.get(key) -%}
+  {%- if entry and key not in renderedKeys -%}
+    {%- do renderedKeys.append(key) -%}
+    {{ renderQuestion(entry.q, entry.path) }}
+  {%- endif -%}
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------------------ #}
+{#  ANSWER MACROS                                                                        #}
+{# ------------------------------------------------------------------------------------ #}
+{%- macro renderAnswerValue(question, reply, path) -%}
+  <div class="answer-block answer-simple" id="{{path}}" data-path="{{path}}" data-type="answer">
+    <p class="answer">
+      {% if reply is of_type("StringReply") %}
+        <span>{{reply.markdown_plain}}</span>
+      {% elif reply.is_integration or reply.is_legacy_integration %}
+        <span>{{reply.value|markdown}}</span>
+      {% else %}
+        <span>{{reply.value}}</span>
+      {% endif %}
+    </p>
+  </div>
+{%- endmacro -%}
+
+{%- macro renderAnswerOption(question, reply, path) -%}
+  {% set answer = reply.answer %}
+  {% set path = path ~ "." ~ answer.uuid %}
+  <div class="answer-block answer-option" id="{{path}}" data-path="{{path}}" data-uuid="{{answer.uuid}}" data-type="answer">
+    <p class="answer">
+      <span>{{answer.label}}</span>
+    </p>
+    {% if answer.followups|length > 0 %}
+      <div class="followups">
+        {% for followup in answer.followups %}
+          {{ renderQuestion(followup, path) }}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{%- endmacro -%}
+
+{%- macro renderItemCell(fq, fqReply) -%}
+  {% if fqReply and fqReply.value %}
+    {% if fq is of_type("ValueQuestion") and fqReply is of_type("StringReply") %}
+      <span>{{ fqReply.markdown_plain }}</span>
+    {% elif fqReply.is_integration or fqReply.is_legacy_integration %}
+      <span>{{ fqReply.value|markdown }}</span>
+    {% elif fq is of_type("OptionsQuestion") and fqReply is of_type("AnswerReply") %}
+      <span>{{ fqReply.answer.label }}</span>
+    {% elif fq is of_type("MultiChoiceQuestion") and fqReply is of_type("MultiChoiceReply") %}
+      <span>
+        {%- set chosen = [] -%}
+        {%- for choice in fq.choices -%}
+          {%- if choice in fqReply.choices -%}{%- do chosen.append(choice.label) -%}{%- endif -%}
+        {%- endfor -%}
+        {{ chosen | join(", ") }}
+      </span>
+    {% elif fq is of_type("ItemSelectQuestion") and fqReply is of_type("ItemSelectReply") %}
+      <span>{{ fqReply.item_title }}</span>
+    {% elif fq is of_type("FileQuestion") and fqReply is of_type("FileReply") %}
+      {% if fqReply.file %}
+        <a href="{{ fqReply.file.download_url }}" target="_blank">{{ fqReply.file.name }}</a>
+      {% else %}
+        <span class="no-answer">&mdash;</span>
+      {% endif %}
+    {% else %}
+      <span>{{ fqReply.value }}</span>
+    {% endif %}
+  {% else %}
+    <span class="no-answer">&mdash;</span>
+  {% endif %}
+{%- endmacro -%}
+
+{%- macro renderAnswerList(question, reply, path) -%}
+<div class="answer-block answer-items" id="{{path}}" data-path="{{path}}" data-type="answer">
+  {% set itemPathPrefix = path ~ "." %}
+  {% if question.followups|length > 0 and question.followups|length < 6 %}
+    {# Narrow lists read better as a table, one row per item. #}
+    <table class="answer-items-table">
+      <thead>
+        <tr>
+          <th class="item-index-col">#</th>
+          {% for fq in question.followups %}
+          <th>{{ fq.title }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for itemUuid in reply.items %}
+          {% set itemPath = itemPathPrefix ~ itemUuid %}
+          <tr id="item-{{ question.uuid }}-{{itemUuid}}" data-path="{{itemPath}}">
+            <td class="item-index-col">{{ loop.index }}</td>
+            {% for fq in question.followups %}
+              <td>{{ renderItemCell(fq, fq.replies.get(itemPath ~ "." ~ fq.uuid)) }}</td>
+            {% endfor %}
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="{{ question.followups|length + 1 }}" class="no-answer">No answer items</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    {% for itemUuid in reply.items %}
+      {% set itemPath = itemPathPrefix ~ itemUuid %}
+      <div class="answer-item" id="item-{{ question.uuid }}-{{itemUuid}}" data-path="{{itemPath}}">
+        <div class="followups">
+          {% for subQuestion in question.followups %}
+            {{ renderQuestion(subQuestion, itemPath) }}
+          {% else %}
+            <p class="no-answer">No follow up questions</p>
+          {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <p class="no-answer">No answer items</p>
+    {% endfor %}
+  {% endif %}
+</div>
+{%- endmacro -%}
+
+{%- macro renderAnswerChoiceList(question, reply, path) -%}
+<div class="answer-block answer-items" id="{{path}}" data-path="{{path}}" data-type="answer">
+  <p class="answer">
+    {%- set chosen = [] -%}
+    {%- for choice in question.choices -%}
+      {%- if choice in reply.choices -%}
+        {%- do chosen.append(choice.label) -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {% if chosen|length > 0 %}
+      <span>{{ chosen | join(", ") }}</span>
+    {% else %}
+      <span class="no-answer">No choices selected</span>
+    {% endif %}
+  </p>
+</div>
+{%- endmacro -%}
+
+{%- macro renderAnswerItemSelect(question, reply, path) -%}
+  <div class="answer-block answer-select" id="{{path}}" data-path="{{path}}" data-type="answer">
+    <p class="answer">
+      <span>{{ reply.item_title }}</span>
+    </p>
+  </div>
+{%- endmacro -%}
+
+{%- macro renderAnswerFile(question, reply, path) -%}
+  <div class="answer-block answer-select" id="{{path}}" data-path="{{path}}" data-type="answer">
+    <p class="answer">
+      {% if reply.file %}
+        <span><a href="{{ reply.file.download_url }}" target="_blank">{{ reply.file.name }}</a> ({{ reply.file.size|bytesize_format }})</span>
+      {% else %}
+        <span>The file has been deleted</span>
+      {% endif %}
+    </p>
+  </div>
+{%- endmacro -%}
+
+{# ------------------------------------------------------------------------------------ #}
+{#  QUESTION MACROS                                                                      #}
+{# ------------------------------------------------------------------------------------ #}
+{%- macro questionClasses(question) -%}
+  "question {{ "required" if question.is_required else "optional"}} {{ ("phase-" ~ question.required_phase.order) if question.required_phase else "phase-none" }}"
+{%- endmacro -%}
+
+{%- macro renderQuestionReply(question, path) -%}
+  {% set reply = question.replies.get(path) %}
+  {% if reply and reply.value %}
+    {% if question is of_type("ValueQuestion") and reply is of_type("StringReply") %}
+      {{ renderAnswerValue(question, reply, path) }}
+    {% elif question is of_type("OptionsQuestion") and reply is of_type("AnswerReply") %}
+      {{ renderAnswerOption(question, reply, path) }}
+    {% elif question is of_type("ListQuestion") and reply is of_type("ItemListReply") %}
+      {{ renderAnswerList(question, reply, path) }}
+    {% elif question is of_type("IntegrationQuestion") and reply is of_type("IntegrationReply") %}
+      {{ renderAnswerValue(question, reply, path) }}
+    {% elif question is of_type("MultiChoiceQuestion") and reply is of_type("MultiChoiceReply") %}
+      {{ renderAnswerChoiceList(question, reply, path) }}
+    {% elif question is of_type("ItemSelectQuestion") and reply is of_type("ItemSelectReply") %}
+      {{ renderAnswerItemSelect(question, reply, path) }}
+    {% elif question is of_type("FileQuestion") and reply is of_type("FileReply") %}
+      {{ renderAnswerFile(question, reply, path) }}
+    {% endif %}
+  {% else %}
+    <div class="answer-block not-answered">
+      <p class="no-answer">
+        <span>This question has not been answered yet</span>
+      </p>
+    </div>
+  {% endif %}
+{%- endmacro -%}
+
+{%- macro renderQuestion(question, path) -%}
+  {% set path = path ~ "." ~ question.uuid %}
+  <div class={{questionClasses(question)}} id="{{path}}" data-uuid="{{question.uuid}}" data-type="question">
+    <div class="question-header">
+      <h4 class="title">{{question.title}}</h4>
+    </div>
+    {{ renderQuestionReply(question, path) }}
+  </div>
+{%- endmacro -%}

@@ -1,31 +1,20 @@
-{%- set contributorsPath = [uuids.adminDetailsCUuid, uuids.contributorsQUuid]|join(".") -%}
-{%- set contributorsItems = repliesMap[contributorsPath]|reply_items -%}
+{#- Contributors are navigated by json.key annotation, see _renderers for the rest. -#}
+{%- set contributorItems = replies.administrativeInformation.contributors if replies.administrativeInformation else [] -%}
 <div id="dmp-contributors">
   <h2>Contributors</h2>
 
-  <p>The following contributors are related to the {{globals.projects}} of this DMP:</p>
+  <p>The following contributors are related to the project of this DMP:</p>
 
-  {% set contributors = [] %}
-  {%- for contributor in contributorsItems -%}
-    {%- set pathPrefix = [contributorsPath, contributor]|reply_path ~ "." -%}
-    {%- set contributorName = repliesMap[pathPrefix ~ uuids.contributorNameQUuid]|reply_str_value -%}
-    {%- set contributorEmail = repliesMap[pathPrefix ~ uuids.contributorEmailQUuid]|reply_str_value -%}
-    {%- set contributorOrcid = repliesMap[pathPrefix ~ uuids.contributorOrcidQUuid] -%}
-    {%- set contributorRoles = repliesMap[pathPrefix ~ uuids.contributorRoleQUuid]|reply_items -%}
-    {%- set contributorAffiliationReply = repliesMap[pathPrefix ~ uuids.contributorAffiliationQUuid] -%}
-    {%- if contributorName -%}
-      {%- set roles = [] -%}
-      {%- for role in contributorRoles -%}
-        {%- if role in dc.e.choices.keys() -%}
-          {%- do roles.append(dc.e.choices[role].label) -%}
-        {%- endif -%}
-      {%- endfor -%}
+  {%- set contributors = [] -%}
+  {%- for item in contributorItems -%}
+    {%- set name = item.name._value if item.name else "" -%}
+    {%- if name -%}
       {%- do contributors.append({
-        'name': contributorName,
-        'email': contributorEmail,
-        'orcid': contributorOrcid,
-        'roles': roles|sort,
-        'affiliation': contributorAffiliationReply,
+        'name': name,
+        'email': item.email._value if item.email else "",
+        'orcid': item.orcid._value if item.orcid else "",
+        'affiliation': item.affiliation._value if item.affiliation else "",
+        'roles': (item.roles|map(attribute='_label')|list|sort) if item.roles else [],
       }) -%}
     {%- endif -%}
   {%- endfor -%}
@@ -35,18 +24,17 @@
   {% for contributor in contributors %}
     <li class="contributor">
       <span class="name">{{ contributor.name }}</span>
-      {%- if contributor.email and contributor.orcid %}
-        <br>{{ macros.formatEmail(contributor.email) }}, {{ macros.formatOrcid(contributor.orcid) }}
-      {%- elif contributor.email %}
-        <br>{{ macros.formatEmail(contributor.email) }}
-      {%- elif contributor.orcid %}
-        <br>{{ macros.formatOrcid(contributor.orcid) }}
+      {%- if contributor.email %}
+        <br><a href="mailto:{{ contributor.email }}">{{ contributor.email }}</a>
+      {%- endif -%}
+      {%- if contributor.orcid %}
+        <br>{{ contributor.orcid|markdown }}
       {%- endif -%}
       {%- if contributor.roles|length > 0 %}
         <br>{% if contributor.roles|length == 1 %}Role{% else %}Roles{% endif %}: {% for role in contributor.roles %}<span class="role">{{ role }}</span>{% if not loop.last %}, {% endif %}{% endfor %}
       {%- endif %}
       {%- if contributor.affiliation %}
-        <br>Affiliation: <span class="affiliation">{{ macros.integrationROR(contributor.affiliation) }}</span>
+        <br>Affiliation: <span class="affiliation">{{ contributor.affiliation|markdown }}</span>
       {%- endif %}
     </li>
   {% endfor %}
@@ -55,7 +43,7 @@
   <ul>
     <li class="contributor">
       <span class="name">{{ dc.project.created_by.first_name }} {{ dc.project.created_by.last_name }}</span>
-      <br>{{ macros.formatEmail(dc.project.created_by.email) }}
+      <br><a href="mailto:{{ dc.project.created_by.email }}">{{ dc.project.created_by.email }}</a>
       {%- if dc.project.created_by.affiliation %}
       <br>Affiliation: <span class="affiliation">{{ dc.project.created_by.affiliation }}</span>
       {%- endif %}

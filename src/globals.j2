@@ -1,5 +1,11 @@
-{#- Project or projects (based on number) -#}
-{%- set projectsPath = [uuids.adminDetailsCUuid, uuids.projectsQUuid]|reply_path -%}
-{%- set projectsItems = repliesMap[projectsPath]|reply_items -%}
-{%- set projects = "projects" if projectsItems|length > 1 else "project" -%}
-{%- set projectsIsAre = "are" if projectsItems|length > 1 else "is" -%}
+{#-
+  Shared front-matter values.
+
+  The Norwegian knowledge model describes a single research project per DMP
+  (chapter "About the research project"), so there is no plural/singular choice to
+  make as there was with the list-based dsw:root model.
+-#}
+{%- set project = replies.researchProjectChapter -%}
+{%- set admin = replies.administrativeInformation -%}
+{%- set projectName = project.name._value if project and project.name else "" -%}
+{%- set dmpTitle = admin.dmpTitle._value if admin and admin.dmpTitle else "" -%}

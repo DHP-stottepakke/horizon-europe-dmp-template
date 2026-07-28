@@ -252,3 +252,93 @@ dl dd ul li:not(:last-child) {
 dl .contact-name {
   font-weight: bold;
 }
+
+/* ---------------------------------------------------------------------------
+   Structured answers (question/answer blocks, item tables)
+   --------------------------------------------------------------------------- */
+
+.question:not(:last-child) {
+  padding-bottom: 0.5rem;
+}
+
+.answer-item:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+.question-header h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.question .question-header {
+  page-break-inside: avoid;
+}
+
+.followups {
+  margin-top: 0.5rem;
+  padding-left: 1rem;
+  border-left: 2px solid #e9ecef;
+}
+
+.answer-item > .followups {
+  border-left: none;
+  padding-left: 0;
+}
+
+.answer-block {
+  margin-bottom: 0.5rem;
+}
+
+.answer p, .no-answer p {
+  margin: 0;
+}
+
+.answer-block .answer span {
+  vertical-align: middle;
+}
+
+.no-answer {
+  font-style: italic;
+  color: #6c757d;
+}
+
+.answer-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.5em 0 1em 0;
+  font-size: 0.95em;
+}
+
+.answer-items-table thead tr {
+  background-color: #f0f0f0;
+}
+
+.answer-items-table th {
+  text-align: left;
+  padding: 0.4em 0.75em;
+  border: 1px solid #ddd;
+  font-weight: 600;
+  color: #333;
+}
+
+.answer-items-table td {
+  padding: 0.4em 0.75em;
+  border: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.answer-items-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.answer-items-table .item-index-col {
+  width: 2em;
+  text-align: center;
+  color: #888;
+  font-size: 0.85em;
+}
+
+.answer-items-table .no-answer {
+  color: #aaa;
+}

@@ -1,58 +1,21 @@
+{%- import "src/_sections.j2" as skeleton with context -%}
 <div id="dmp-content">
-  <section id="sec-data-summary" class="dmp-section">
-    <h2>1. Data Summary</h2>
-
-    {% include "src/questions/01-data-summary.html.j2" with context %}
+  {%- for section in skeleton.sections %}
+  <section id="{{ section.id }}" class="dmp-section">
+    <h2>{{ section.title }}</h2>
+    {%- for block in section.blocks %}
+    {#- Capture first so a block whose anchors are all absent from the knowledge
+        model does not leave a dangling heading behind. -#}
+    {%- set rendered %}
+      {%- for key in block.anchors %}{{ renderers.renderByKey(kmIndex.qidx, key) }}{% endfor -%}
+    {% endset -%}
+    {%- if rendered|trim %}
+    {%- if block.heading %}
+    <h3>{{ block.heading }}</h3>
+    {%- endif %}
+    {{ rendered }}
+    {%- endif %}
+    {%- endfor %}
   </section>
-
-  <section id="sec-fair-data" class="dmp-section">
-    <h2>2. FAIR Data</h2>
-
-    <h3>2.1. Making data findable, including provisions for metadata</h3>
-
-    {% include "src/questions/02-1-findable.html.j2" with context %}
-    
-    <h3>2.2. Making data accessible</h3>
-
-    {% include "src/questions/02-2-accessible.html.j2" with context %}
-    
-    <h3>2.3. Making data interoperable</h3>
-
-    {% include "src/questions/02-3-interoperable.html.j2" with context %}
-    
-    <h3>2.4. Increase data re-use</h3>
-
-    {% include "src/questions/02-4-reusable.html.j2" with context %}
-  </section>
-
-  <section id="sec-resource-allocation" class="dmp-section">
-    <h2>3. Other research outputs</h2>
-
-    {% include "src/questions/03-other-outputs.html.j2" with context %}
-  </section>
-
-  <section id="sec-resource-allocation" class="dmp-section">
-    <h2>4. Allocation of resources</h2>
-
-    {% include "src/questions/04-resource-allocation.html.j2" with context %}
-  </section>
-
-  <section id="sec-data-security" class="dmp-section">
-    <h2>5. Data security</h2>
-
-    {% include "src/questions/05-data-security.html.j2" with context %}
-  </section>
-
-  <section id="sec-ethical-aspects" class="dmp-section">
-    <h2>6. Ethics</h2>
-
-    {% include "src/questions/06-ethics.html.j2" with context %}
-  </section>
-
-  <section id="sec-other-issues" class="dmp-section">
-    <h2>7. Other issues</h2>
-
-    {% include "src/questions/07-other-issues.html.j2" with context %}
-  </section>
-
+  {%- endfor %}
 </div>

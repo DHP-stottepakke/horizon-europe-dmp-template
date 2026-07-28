@@ -1,0 +1,34 @@
+{#-
+  Index of the annotated knowledge model: "<chapterKey>.<questionKey>" -> question.
+
+  Only top-level questions of annotated chapters are indexed. Their reply path is
+  simply "<chapter.uuid>", to which renderQuestion appends the question uuid.
+  Questions below an answer or inside a list item have reply paths that depend on
+  the reply itself, so they are not addressable and are reached by recursion from
+  their anchor instead.
+
+  json.key is unique within a chapter only, hence the chapter-qualified keys.
+-#}
+{%- set qidx = {} -%}
+
+{%- macro annotationKey(entity) -%}
+  {#- Duplicate annotations are loaded as a list; take the first usable value. -#}
+  {%- set value = entity.a.get("json.key") -%}
+  {%- if value is string -%}{{ value }}
+  {%- elif value -%}{{ value[0] }}
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- for chapter in dc.km.chapters -%}
+  {%- set chapterKey = annotationKey(chapter)|trim -%}
+  {%- if chapterKey -%}
+    {%- for question in chapter.questions -%}
+      {%- set questionKey = annotationKey(question)|trim -%}
+      {%- if questionKey -%}
+        {%- do qidx.update({
+          chapterKey ~ "." ~ questionKey: {"q": question, "path": chapter.uuid}
+        }) -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endfor -%}

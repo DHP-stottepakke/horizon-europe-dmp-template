@@ -1,10 +1,8 @@
 <!DOCTYPE HTML>
-{%- set km = ctx.knowledgeModel -%}
-{%- set repliesMap = ctx.project.replies -%}
-{%- set report = ctx.report -%}
 {%- set dc = ctx|to_context_obj -%}
-{% import "src/macros.html.j2" as macros with context %}
-{% import "src/uuids.j2" as uuids with context %}
+{%- set replies = dc|extract_replies -%}
+{% import "src/_km_index.j2" as kmIndex with context %}
+{% import "src/_renderers.html.j2" as renderers with context %}
 {% import "src/globals.j2" as globals with context %}
 <html lang="en">
   <head>

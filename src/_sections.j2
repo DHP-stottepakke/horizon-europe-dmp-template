@@ -1,0 +1,162 @@
+{#-
+  Document skeleton: the Horizon Europe DMP sections mapped onto the Norwegian
+  knowledge model (research.data.no:norway-generic).
+
+  Section titles and numbering follow the EC "Template Horizon Europe Data
+  Management Plan". Each block lists anchor questions as "<chapterKey>.<questionKey>"
+  json.key pairs; keys are chapter-qualified because json.key is only unique within
+  a chapter. Every anchor is a top-level question of a live (annotated) chapter, so
+  its reply path is deterministic; follow-up questions and list items below an
+  anchor are rendered recursively and must not be listed here.
+
+  Anchors are rendered at most once per document (see renderByKey in
+  _renderers.html.j2), so the first section listing a key wins.
+
+  Selection is driven by the KM's "Horizon Europe" tag. Anchors that do not carry
+  that tag but that the EC template explicitly asks for are marked [untagged] below;
+  tools/check_sections.py reports both directions of that comparison.
+
+  Questions used for the front matter (contributors, project metadata, DMP title)
+  are handled in contributors.html.j2 / projects.html.j2 and are absent here.
+-#}
+{%- set sections = [
+  {
+    "id": "sec-data-summary",
+    "title": "1. Data Summary",
+    "blocks": [
+      {
+        "anchors": [
+          "reusingCollectingChapter.hasMeasuredData",
+          "reusingCollectingChapter.hasNonMeasuredData",
+          "reusingCollectingChapter.collectsPhysicalSample",
+          "reusingCollectingChapter.reDatasetsRecords",
+          "reusingCollectingChapter.gather",
+          "storingProtectingChapter.expectedTotalVolume"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sec-fair-data",
+    "title": "2. FAIR Data",
+    "blocks": [
+      {
+        "heading": "2.1. Making data findable, including provisions for metadata",
+        "anchors": [
+          "creatingData.miaStandardsExist",
+          "creatingData.connectRespectiveMetadata",
+          "archivingPublishingChapter.distributions"
+        ]
+      },
+      {
+        "heading": "2.2. Making data accessible",
+        "anchors": [
+          "archivingPublishingChapter.allOpenOverTime",
+          "archivingPublishingChapter.identifyArchiveDepositing",
+          "creatingData.dataUseRestrictions"
+        ]
+      },
+      {
+        "heading": "2.3. Making data interoperable",
+        "anchors": [
+          "creatingData.usesVocabularies",
+          "processingDataChapter.integratingDataSourcesMoreInfo",
+          "processingDataChapter.integratingDataSourcesMoreSamples",
+          "processingDataChapter.otherFormThanArchive"
+        ]
+      },
+      {
+        "heading": "2.4. Increase data re-use",
+        "anchors": [
+          "creatingData.assignsLicense",
+          "creatingData.collectedDataRights",
+          "reusingCollectingChapter.whoInterested",
+          "archivingPublishingChapter.listHaveDelete"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sec-other-outputs",
+    "title": "3. Other research outputs",
+    "blocks": [
+      {
+        "anchors": [
+          "reusingCollectingChapter.generateResearchSoftware",
+          "archivingPublishingChapter.softwarePackages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sec-resource-allocation",
+    "title": "4. Allocation of resources",
+    "blocks": [
+      {
+        "anchors": [
+          "responsibilitiesResourcesChapter.haveManagementResponsibilities",
+          "responsibilitiesResourcesChapter.requiresSpecialist",
+          "responsibilitiesResourcesChapter.requiresSpecialHardwareSoftware",
+          "responsibilitiesResourcesChapter.specialArrangementsAccess",
+          "processingDataChapter.planComputeCapacity",
+          "responsibilitiesResourcesChapter.storageActivePhase",
+          "responsibilitiesResourcesChapter.preservationArchivingAssociated",
+          "responsibilitiesResourcesChapter.hasDataPublicationBudget",
+          "responsibilitiesResourcesChapter.recurringFees",
+          "responsibilitiesResourcesChapter.totalCostsManagement"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sec-data-security",
+    "title": "5. Data security",
+    "blocks": [
+      {
+        "anchors": [
+          "storingProtectingChapter.storeDocuments",
+          "storingProtectingChapter.storageGuidelinesFollowing",
+          "storingProtectingChapter.storageChangeNeeds",
+          "storingProtectingChapter.dataLossLeakVandalismRisks",
+          "processingDataChapter.processingAffectInformation",
+          "processingDataChapter.sharedWorkingSpace",
+          "storingProtectingChapter.workTogetherDocuments",
+          "processingDataChapter.monitorIntegrity",
+          "processingDataChapter.resultsIntegrityValidation",
+          "processingDataChapter.fileVersioningDocs"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sec-ethical-aspects",
+    "title": "6. Ethics",
+    "blocks": [
+      {
+        "anchors": [
+          "legalEthicalAspectsChapter.requiresEthicalApproval",
+          "legalEthicalAspectsChapter.personalCollectedProcessed",
+          "legalEthicalAspectsChapter.sensitiveInformationThan",
+          "legalEthicalAspectsChapter.indicateApplicableGeneral",
+          "legalEthicalAspectsChapter.additionalEthicalGuidelines",
+          "legalEthicalAspectsChapter.involvedInstitutionPartner"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sec-other-issues",
+    "title": "7. Other issues",
+    "blocks": [
+      {
+        "anchors": [
+          "administrativeInformation.institutionalPoliciesGuidelines",
+          "administrativeInformation.didConsultResearch",
+          "administrativeInformation.dmpRelatedDmp",
+          "administrativeInformation.haveMadePlans",
+          "administrativeInformation.havePublishedPublish"
+        ]
+      }
+    ]
+  }
+] -%}
