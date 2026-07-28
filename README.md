@@ -7,7 +7,7 @@ It is a fork of the [upstream Horizon Europe DMP template](https://github.com/ds
 * **Navigation by annotation.** The upstream template addresses the knowledge model through hardcoded question UUIDs. This version navigates by the `json.key` / `json.value` annotations that the Norwegian knowledge model carries, so it contains no UUIDs at all. Which questions appear in which EC section is declared in [`src/_sections.j2`](src/_sections.j2), driven by the knowledge model's *Horizon Europe* tag.
 * **Structured answers instead of prose.** The upstream template synthesises English sentences per answer branch. This version keeps the EC section structure and headings but renders each question with its title and its reply, in the style of the *Questionnaire Report - lean* template: markdown values, tables for item lists with fewer than six sub-questions, comma-separated multiple choices, and an explicit placeholder for questions that have not been answered.
 
-Because it relies on `extract_replies`, it requires DSW 4.20 or newer (template metamodel 18.1).
+Because it relies on `extract_replies`, it requires DSW 4.20 or newer; template metamodel 18.1.
 
 
 ## Development
@@ -15,7 +15,9 @@ Because it relies on `extract_replies`, it requires DSW 4.20 or newer (template 
 `tools/` holds a local harness that renders the template without a DSW instance:
 
 ```bash
-KM=../KM-tooling/mapJsonKeysWF/results/research.data.no_norway-generic_1.2.1-squashed.km
+# path to the KM-tooling checkout next to this repository
+KM_TOOLING=$(cd .. && pwd)/KM-tooling
+KM=$KM_TOOLING/mapJsonKeysWF/results/research.data.no_norway-generic_1.2.1-squashed.km
 
 python3 tools/check_syntax.py                              # parse every template
 python3 tools/check_sections.py --km $KM --tag "Horizon Europe"   # validate src/_sections.j2
