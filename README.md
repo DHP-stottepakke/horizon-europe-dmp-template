@@ -33,8 +33,16 @@ This template is distributed for the Norwegian DSW instance. The upstream templa
 
 ## Issues and Contributing
 
-This document template for DSW is available as open-source via GitHub Repository [ds-wizard/horizon-europe-dmp-template](https://github.com/ds-wizard/horizon-europe-dmp-template), you can [report issues](https://github.com/ds-wizard/horizon-europe-dmp-template/issues) there and fork it for customizations or contributions.
+This document template for DSW is available as open-source via GitHub Repository [DHP-stottepakke/horizon-europe-dmp-template](https://github.com/DHP-stottepakke/horizon-europe-dmp-template), you can [report issues](https://github.com/DHP-stottepakke/horizon-europe-dmp-template/issues) there and fork it for customizations or contributions.
 
+## AI-Assisted Development
+
+Some recent changes in this repository were developed with AI-assisted tooling. Proposed code, template mappings, local tooling, and documentation changes were reviewed and adapted by human contributors before being kept in the repository.
+
+For the work captured in this thread, the following AI tooling was used:
+
+- Agent: Claude Code
+- Models: Claude Opus 5
 
 ### Contributors
 
@@ -48,159 +56,17 @@ This document template for DSW is available as open-source via GitHub Repository
   * ORCID: [0000-0001-8575-6533](https://orcid.org/0000-0001-8575-6533/)
   * GitHub: [@jmartinkova](https://github.com/jmartinkova)
 
+### Edits
+
+* **Korbinian Bösl** <[korbinian.bosl@uib.no](mailto:korbinian.bosl@uib.no)>
+  * ORCID: [0000-0003-0498-4273](https://orcid.org/0000-0003-0498-4273)
+  * GitHub: [@korbinib](https://github.com/korbinib)
+* **Michael Dondrup** <[mdondrup@gmail.com](mailto:mdondrup@gmail.com)>
+  * ORCID: [0000-0002-2371-5928](https://orcid.org/0000-0002-2371-5928)
+  * GitHub: [@mdondrup](https://github.com/mdondrup)
 
 ## Changelog
 
 ### 1.0.0
 
-Initial release of the Norwegian port: new template ID `research.data.no:horizon-europe-dmp-norway`, annotation-based navigation against `research.data.no:norway-generic` 1.2.1+, and lean-style structured answer rendering. Section content is selected by the knowledge model's *Horizon Europe* tag; `src/_sections.j2` records the mapping and `tools/check_sections.py` keeps it honest.
-
-
-### 1.21.1
-
-- Fixed text value type questions rendering with markdown
-
-### 1.21.0
-
-- Adjusted to template metamodel version 18.0 (released in DSW 4.29.0)
-- Use images from `assets` directory instead of external links
-
-### 1.20.1
-
-- Adjusted to template metamodel version 17.1 (released in DSW 4.26.0)
-
-### 1.20.0
-
-- Added content to the Other Outputs section
-- Fixed the published dataset to reflect future-oriented statement
-- Improved qualified references part
-- Updated reused dataset name to use reply string value instead FAIRsharing integration
-- Updated dependency on KM to 2.7.0
-
-### 1.19.0
-
-- Fixed non-equipment datasets utility
-- Fixed affiliation for MS Word format
-- Improved text
-
-### 1.18.0
-
-- Updated dependency on KM to 2.6.13
-- Fixed legacy integration type
-
-### 1.17.0
-
-- Updated integrations to metamodel version 17.0 (released in DSW 4.22.0)
-- Improved minor text flow
-
-### 1.16.0
-
-- Adjusted to template metamodel version 17.0 (released in DSW 4.22.0)
-- Fixed typos
-
-### 1.15.0
-
-- Added "General-purpose repository" option to repository type descriptions
-- Fixed broken link to the Horizon Europe DMP template in the README
-
-### 1.14.0
-
-- Added ORCID Integration
-- Added compatible knowledge models to README
-
-### 1.13.0
-
-- Fixed Question 2 (part 4) on approaches to open data
-- Improved layout of affiliation
-
-### 1.12.0
-
-- Improved Question 2 (part 2) regarding SW documentation and standard protocol
-- Improved layout of affiliation
-
-### 1.11.0
-
-- Adjusted to template metamodel version 16 (released in DSW 4.13.0)
-
-### 1.10.0
-
-- Adjusted to template metamodel version 15 (released in DSW 4.12.0)
-
-### 1.9.0
-
-- Adjusted to template metamodel version 14 (released in DSW 4.10.0)
-
-### 1.8.1
-
-- Fixed nested bullet points would display unwanted characters
-
-### 1.8.0
-
-- Fixed Questions 2 (part 1) regarding data versions to allow for multiple choices
-- Improved Question 2 (part 4) regarding access to private data and reasons destroying data
-- Improved Question 4 regarding costs in project
-
-### 1.7.0
-
-- Adjusted to template metamodel version 13 (released in DSW 4.3.0)
-
-### 1.6.2
-
-- Fixed broken images in Word
-
-### 1.6.1
-
-- Fixed `integrationValue` error
-
-### 1.6.0
-
-- Adjusted to template metamodel version 12 (released in DSW 4.1.0)
-
-### 1.5.1
-
-- Fixed broken uuids
-
-### 1.5.0
-
-- Updated for `dsw:root:2.5.0`
-
-### 1.4.0
-
-- Switched from `wkhtmltopdf` to `weasyprint` for PDF
-- Improved styling for PDF and HTML
-- Aligned data openness with the KM
-
-### 1.3.0
-
-- Adjusted to template metamodel version 11 (released in DSW 3.20.0)
-- Fixed Minimal Metadata About listing
-- Fixed singular role selected would appear as roles
-
-### 1.2.4
-
-- Fixed "Metadata will be openly available without/including instructions..." (`26b2afa6-99e8-4337-b380-5642bc807ad8`)
-
-### 1.2.3
-
-- Changed responsibilities in Chapter 4 (instead of project creator, use assigned project managers for *responsible for implementing the DMP, and ensuring it is reviewed and revised*)
-- Fixed additional training description in Chapter 4
-
-### 1.2.2
-
-- Fixed "Minimal Metadata About" listing (`e7b6cd51-22a6-4f7a-9ad5-a7234fa436cb`)
-
-### 1.2.1
-
-- Fixed use of "Describe your SOP (Standard Operating Procedure) for file naming" (`9ff389f0-2236-48cf-880c-040ea1bb0d2f`)
-
-### 1.2.0
-
-- Adjusted to template metamodel version 10 (released in DSW 3.12.0)
-
-### 1.1.0
-
-- Adjusted to template metamodel version 9 (released in DSW 3.10.0)
-
-### 1.0.0
-
-- Initial version compatible with `dsw:root:2.4.0` and `dsw:lifesciences:2.4.0` knowledge models with HTML, PDF, and Word formats
+Initial release of the Norwegian port: new template ID `research.data.no:horizon-europe-dmp-norway`, annotation-based navigation against `research.data.no:norway-generic` 1.2.1+, and lean-style structured answer rendering. Section content is selected by the knowledge model's *Horizon Europe* tag; `src/_sections.j2` records the mapping and `tools/check_sections.py` tests it.
