@@ -27,14 +27,16 @@
       {%- if contributor.email %}
         <br><a href="mailto:{{ contributor.email }}">{{ contributor.email }}</a>
       {%- endif -%}
+      {#- ORCID and affiliation come from integrations, so their markdown is unwrapped
+          to stay on the line the <br> started; see globals.mdInline. -#}
       {%- if contributor.orcid %}
-        <br>{{ contributor.orcid|markdown }}
+        <br>{{ globals.mdInline(contributor.orcid) }}
       {%- endif -%}
       {%- if contributor.roles|length > 0 %}
         <br>{% if contributor.roles|length == 1 %}Role{% else %}Roles{% endif %}: {% for role in contributor.roles %}<span class="role">{{ role }}</span>{% if not loop.last %}, {% endif %}{% endfor %}
       {%- endif %}
       {%- if contributor.affiliation %}
-        <br>Affiliation: <span class="affiliation">{{ contributor.affiliation|markdown }}</span>
+        <br>Affiliation: <span class="affiliation">{{ globals.mdInline(contributor.affiliation) }}</span>
       {%- endif %}
     </li>
   {% endfor %}

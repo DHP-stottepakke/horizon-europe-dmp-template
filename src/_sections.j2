@@ -16,9 +16,34 @@
   that tag but that the EC template explicitly asks for are marked [untagged] below;
   tools/check_sections.py reports both directions of that comparison.
 
-  Questions used for the front matter (contributors, project metadata, DMP title)
-  are handled in contributors.html.j2 / projects.html.j2 and are absent here.
+  Questions used for the front matter (contributors, project metadata, DMP title,
+  related DMPs) are handled in frontpage.html.j2 / contributors.html.j2 /
+  projects.html.j2 and are absent here.
+
+  A few tagged questions are deliberately left out because reviewers found them
+  redundant in this document; they are listed as OMITTED in tools/check_sections.py
+  with the reason, so the deviation stays visible rather than looking like an
+  oversight. Section 5 in particular now reads guidelines first, then where the data
+  actually live, with the IT security question last as the summary of what is at
+  stake. Three untagged questions were dropped from it as not being about data
+  security: "Will storage need change over time?", "Do you need a shared space with
+  your collaborators to work on data analysis?" and "Does your computational
+  approach require validation of results?".
+
+  The list below is a single Jinja expression, so it takes no {# #} comments; notes
+  about individual blocks belong here.
 -#}
+{#-
+  Follow-up questions dropped wherever they occur below an anchor, by json.key.
+  Anchors are chapter-qualified but follow-ups are reached by recursion, which does
+  not carry the chapter along, so these keys are matched unqualified;
+  tools/check_sections.py fails if one of them is not unique in the knowledge model.
+-#}
+{%- set omitFollowups = [
+  "storageSolutionAssociated",
+  "storageSolutionStructured",
+  "descriptionStorageSolution"
+] -%}
 {%- set sections = [
   {
     "id": "sec-data-summary",
@@ -45,6 +70,7 @@
         "anchors": [
           "creatingData.miaStandardsExist",
           "creatingData.connectRespectiveMetadata",
+          "archivingPublishingChapter.identifyArchiveDepositing",
           "archivingPublishingChapter.distributions"
         ]
       },
@@ -52,7 +78,6 @@
         "heading": "2.2. Making data accessible",
         "anchors": [
           "archivingPublishingChapter.allOpenOverTime",
-          "archivingPublishingChapter.identifyArchiveDepositing",
           "creatingData.dataUseRestrictions"
         ]
       },
@@ -68,10 +93,9 @@
       {
         "heading": "2.4. Increase data re-use",
         "anchors": [
-          "creatingData.assignsLicense",
-          "creatingData.collectedDataRights",
           "reusingCollectingChapter.whoInterested",
-          "archivingPublishingChapter.listHaveDelete"
+          "creatingData.assignsLicense",
+          "creatingData.collectedDataRights"
         ]
       }
     ]
@@ -114,16 +138,13 @@
     "blocks": [
       {
         "anchors": [
-          "storingProtectingChapter.storeDocuments",
           "storingProtectingChapter.storageGuidelinesFollowing",
-          "storingProtectingChapter.storageChangeNeeds",
-          "storingProtectingChapter.dataLossLeakVandalismRisks",
+          "storingProtectingChapter.storeDocuments",
           "processingDataChapter.processingAffectInformation",
-          "processingDataChapter.sharedWorkingSpace",
           "storingProtectingChapter.workTogetherDocuments",
           "processingDataChapter.monitorIntegrity",
-          "processingDataChapter.resultsIntegrityValidation",
-          "processingDataChapter.fileVersioningDocs"
+          "processingDataChapter.fileVersioningDocs",
+          "storingProtectingChapter.dataLossLeakVandalismRisks"
         ]
       }
     ]
@@ -152,7 +173,6 @@
         "anchors": [
           "administrativeInformation.institutionalPoliciesGuidelines",
           "administrativeInformation.didConsultResearch",
-          "administrativeInformation.dmpRelatedDmp",
           "administrativeInformation.haveMadePlans",
           "administrativeInformation.havePublishedPublish"
         ]

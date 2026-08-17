@@ -29,7 +29,9 @@
             <ul>
             {%- for funding in fundings %}
               <li>
-                {{ funding.funder._value|markdown if funding.funder else "(funder not given)" }}
+                {#- The funder comes from the ROR integration, so its markdown is
+                    unwrapped to keep the grant number on the same line. -#}
+                {{ globals.mdInline(funding.funder._value) if funding.funder else "(funder not given)" }}
                 {%- if funding.grantNumber and funding.grantNumber._value %}: {{ funding.grantNumber._value }}{% else %}: grant number not yet given{% endif %}
                 {%- if funding.status %} ({{ funding.status._label|lower }}){% endif %}
                 {%- if funding.titleAcronymGrant and funding.titleAcronymGrant._value %}<br>{{ funding.titleAcronymGrant._value }}{% endif %}

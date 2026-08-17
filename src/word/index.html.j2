@@ -8,10 +8,13 @@
   <head>
     <title>{{ ctx.project.name }}</title>
     <meta charset="utf-8">
+    <style>
+      {% include "src/style.css" %}
+    </style>
   </head>
   <body>
     <article class="dmp">
-      {% include "src/word/frontpage.html.j2" with context %}
+      {% include "src/frontpage.html.j2" with context %}
       {% include "src/word/versions.html.j2" with context %}
       {% include "src/contributors.html.j2" with context %}
       {% include "src/projects.html.j2" with context %}

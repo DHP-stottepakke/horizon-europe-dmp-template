@@ -5,9 +5,17 @@
   most inline markup on the way to docx, so item references are rendered as plain
   text and list tables carry no styling hooks.
 -#}
+{%- import "src/_sections.j2" as skeleton with context -%}
 
 {#- Anchors already rendered, so a question listed in two sections appears once. -#}
 {%- set renderedKeys = [] -%}
+
+{#- See src/_renderers.html.j2: follow-ups the section skeleton drops. -#}
+{%- macro isOmitted(question) -%}
+  {%- set key = question.a.get("json.key") -%}
+  {%- set key = key if key is string else (key[0] if key else "") -%}
+  {%- if key and key in skeleton.omitFollowups -%}omit{%- endif -%}
+{%- endmacro -%}
 
 {%- macro renderByKey(qidx, key) -%}
   {%- set entry = qidx.get(key) -%}
@@ -20,17 +28,17 @@
 {# ------------------------------------------------------------------------------------ #}
 {#  ANSWER MACROS                                                                        #}
 {# ------------------------------------------------------------------------------------ #}
+{#- See src/_renderers.html.j2: markdown replies are block-level and must not be
+    nested inside <p class="answer">. -#}
 {%- macro renderAnswerValue(question, reply, path) -%}
   <div class="answer-block answer-simple" id="{{path}}" data-path="{{path}}" data-type="answer">
-    <p class="answer">
-      {% if reply is of_type("StringReply") %}
-        <span>{{reply.markdown_plain}}</span>
-      {% elif reply.is_integration or reply.is_legacy_integration %}
-        <span>{{reply.value|markdown}}</span>
-      {% else %}
-        <span>{{reply.value}}</span>
-      {% endif %}
-    </p>
+    {% if reply is of_type("StringReply") %}
+      <p class="answer"><span>{{reply.markdown_plain}}</span></p>
+    {% elif reply.is_integration or reply.is_legacy_integration %}
+      <div class="answer md">{{reply.value|markdown}}</div>
+    {% else %}
+      <p class="answer"><span>{{reply.value}}</span></p>
+    {% endif %}
   </div>
 {%- endmacro -%}
 
@@ -56,7 +64,7 @@
     {% if fq is of_type("ValueQuestion") and fqReply is of_type("StringReply") %}
       <span>{{ fqReply.markdown_plain }}</span>
     {% elif fqReply.is_integration or fqReply.is_legacy_integration %}
-      <span>{{ fqReply.value|markdown }}</span>
+      <div class="md">{{ fqReply.value|markdown }}</div>
     {% elif fq is of_type("OptionsQuestion") and fqReply is of_type("AnswerReply") %}
       <span>{{ fqReply.answer.label }}</span>
     {% elif fq is of_type("MultiChoiceQuestion") and fqReply is of_type("MultiChoiceReply") %}
@@ -86,13 +94,17 @@
 {%- macro renderAnswerList(question, reply, path) -%}
 <div class="answer-block answer-items" id="{{path}}" data-path="{{path}}" data-type="answer">
   {% set itemPathPrefix = path ~ "." %}
-  {% if question.followups|length > 0 and question.followups|length < 6 %}
+  {%- set followups = [] -%}
+  {%- for fq in question.followups -%}
+    {%- if not isOmitted(fq)|trim -%}{%- do followups.append(fq) -%}{%- endif -%}
+  {%- endfor -%}
+  {% if followups|length > 0 and followups|length < 6 %}
     {# Narrow lists read better as a table, one row per item. #}
     <table class="answer-items-table">
       <thead>
         <tr>
           <th class="item-index-col">#</th>
-          {% for fq in question.followups %}
+          {% for fq in followups %}
           <th>{{ fq.title }}</th>
           {% endfor %}
         </tr>
@@ -102,13 +114,13 @@
           {% set itemPath = itemPathPrefix ~ itemUuid %}
           <tr id="item-{{ question.uuid }}-{{itemUuid}}" data-path="{{itemPath}}">
             <td class="item-index-col">{{ loop.index }}</td>
-            {% for fq in question.followups %}
+            {% for fq in followups %}
               <td>{{ renderItemCell(fq, fq.replies.get(itemPath ~ "." ~ fq.uuid)) }}</td>
             {% endfor %}
           </tr>
         {% else %}
           <tr>
-            <td colspan="{{ question.followups|length + 1 }}" class="no-answer">No answer items</td>
+            <td colspan="{{ followups|length + 1 }}" class="no-answer">No answer items</td>
           </tr>
         {% endfor %}
       </tbody>
@@ -118,7 +130,7 @@
       {% set itemPath = itemPathPrefix ~ itemUuid %}
       <div class="answer-item" id="item-{{ question.uuid }}-{{itemUuid}}" data-path="{{itemPath}}">
         <div class="followups">
-          {% for subQuestion in question.followups %}
+          {% for subQuestion in followups %}
             {{ renderQuestion(subQuestion, itemPath) }}
           {% else %}
             <p class="no-answer">No follow up questions</p>
@@ -205,6 +217,7 @@
 {%- endmacro -%}
 
 {%- macro renderQuestion(question, path) -%}
+  {%- if not isOmitted(question)|trim -%}
   {% set path = path ~ "." ~ question.uuid %}
   <div class={{questionClasses(question)}} id="{{path}}" data-uuid="{{question.uuid}}" data-type="question">
     <div class="question-header">
@@ -212,4 +225,5 @@
     </div>
     {{ renderQuestionReply(question, path) }}
   </div>
+  {%- endif -%}
 {%- endmacro -%}

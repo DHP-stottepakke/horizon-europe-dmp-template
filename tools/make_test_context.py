@@ -24,6 +24,16 @@ from pathlib import Path
 
 METAMODEL_VERSION = '18'
 
+# Integration replies picked from a provider carry markdown, and the Norwegian model's
+# integrations all lead with a shields.io badge; the synthetic value keeps that shape so
+# the templates' markdown path is exercised offline. (A typed-in reply would be a
+# PlainType and render as plain text instead.)
+INTEGRATION_VALUE = (
+    '![Static Badge](https://img.shields.io/badge/ORCID-grey?logo=ORCID)\n'
+    '**Ola Nordmann**,\n'
+    'ORCID: [**0000-0002-0179-1655**](https://orcid.org/0000-0002-0179-1655)'
+)
+
 ENTITY_EVENTS = {
     'AddChapterEvent': 'chapters',
     'AddQuestionEvent': 'questions',
@@ -136,7 +146,9 @@ def make_replies(entities: dict) -> dict:
             replies[path] = {'value': {'type': 'StringReply', 'value': 'Test value'}, **meta}
         elif qtype == 'IntegrationQuestion':
             replies[path] = {'value': {'type': 'IntegrationReply',
-                                       'value': {'type': 'PlainType', 'value': 'Test entry'}},
+                                       'value': {'type': 'IntegrationType',
+                                                 'id': 'test',
+                                                 'value': INTEGRATION_VALUE}},
                              **meta}
         elif qtype == 'OptionsQuestion':
             answers = question.get('answerUuids') or []

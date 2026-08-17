@@ -7,6 +7,8 @@ It is a fork of the [upstream Horizon Europe DMP template](https://github.com/ds
 * **Navigation by annotation.** The upstream template addresses the knowledge model through hardcoded question UUIDs. This version navigates by the `json.key` / `json.value` annotations that the Norwegian knowledge model carries, so it contains no UUIDs at all. Which questions appear in which EC section is declared in [`src/_sections.j2`](src/_sections.j2), driven by the knowledge model's *Horizon Europe* tag.
 * **Structured answers instead of prose.** The upstream template synthesises English sentences per answer branch. This version keeps the EC section structure and headings but renders each question with its title and its reply, in the style of the *Questionnaire Report - lean* template: markdown values, tables for item lists with fewer than six sub-questions, comma-separated multiple choices, and an explicit placeholder for questions that have not been answered.
 
+The title page carries the DMP metadata — contact people and related DMPs or formal documents included — so those answers do not have to be hunted for inside the EC sections.
+
 Because it relies on `extract_replies`, it requires DSW 4.20 or newer; template metamodel 18.1.
 
 
@@ -72,3 +74,12 @@ For the work captured in this thread, the following AI tooling was used:
 ### 1.0.0
 
 Initial release of the Norwegian port: new template ID `research.data.no:horizon-europe-dmp-norway`, annotation-based navigation against `research.data.no:norway-generic` 1.2.1+, and lean-style structured answer rendering. Section content is selected by the knowledge model's *Horizon Europe* tag; `src/_sections.j2` records the mapping and `tools/check_sections.py` tests it.
+
+Front matter and layout: all formats now share one title page (`src/frontpage.html.j2`), so the Word export carries the same metadata as the others, and the page lists the contact people alongside *This DMP is related to other DMP(s) or formal document(s)*, which moved there out of "7. Other issues". The EU emblem and flag are sized in the stylesheet, because WeasyPrint ignores the `width`/`height` attributes and would otherwise print them at their natural size. Body text, headings, table cells and section spacing are tighter throughout, and markdown replies from integrations are no longer nested inside a paragraph — which is what left the gap after ORCID and other badge-carrying answers; their badges are now scaled to the text size. The test render of the full knowledge model went from 19 pages to 13.
+
+Section content after review:
+
+* *2.1 Findable* takes "Identify archive(s) for depositing datasets" over from *2.2 Accessible*.
+* *2.4 Increase data re-use* leads with "Who else could be interested in using data from this project?" and no longer asks about deleted data.
+* *5. Data security* reads storage guidelines first, then where the data live, and ends with the IT security question. "Will storage need change over time?", "Do you need a shared space with your collaborators to work on data analysis?" and "Does your computational approach require validation of results?" were dropped as not being about data security; data integrity monitoring and file versioning stay.
+* Individual follow-up questions can now be dropped as well, by json.key, through the `omitFollowups` list in `src/_sections.j2` — used to take costs, data structure and the storage technology description out of "Where will you store data and documents?", which brings that list under the width at which it renders as a table. `tools/check_sections.py` fails if such a key matches no question or more than one, since it is matched without a chapter to qualify it.

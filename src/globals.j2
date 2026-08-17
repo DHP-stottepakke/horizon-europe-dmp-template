@@ -9,3 +9,17 @@
 {%- set admin = replies.administrativeInformation -%}
 {%- set projectName = project.name._value if project and project.name else "" -%}
 {%- set dmpTitle = admin.dmpTitle._value if admin and admin.dmpTitle else "" -%}
+
+{#-
+  Integration replies (ORCID, ROR, ...) are markdown, so the "markdown" filter wraps
+  them in <p>. Dropping that wrapper keeps a value usable in an inline run - a list
+  item or a table cell - where a block-level paragraph would otherwise split the line
+  and leave an empty paragraph behind. The round-trip through "string" is needed
+  because "replace" on a Markup value escapes its arguments.
+
+  Use this only for single-paragraph values; multi-paragraph ones (the local policy
+  integrations, with their bullet lists) belong in a block, see the "md" class.
+-#}
+{%- macro mdInline(text) -%}
+  {{- ((text|markdown)|string|replace("<p>", "")|replace("</p>", ""))|safe -}}
+{%- endmacro -%}

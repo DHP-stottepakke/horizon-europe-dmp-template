@@ -1,29 +1,114 @@
+{#-
+  Title page, shared by every output format.
+
+  Contact people are the contributors whose role choice carries the "contactPerson"
+  json.value.
+
+  "Related DMP(s) or formal document(s)" is answered here rather than in the section
+  skeleton: it describes this DMP, not the data, so it belongs with the rest of the
+  front-page metadata (see the FRONT_MATTER list in tools/check_sections.py).
+-#}
 {%- set eu_header = assets("assets/eu-header.png") -%}
 {%- set eu_flag = assets("assets/eu-flag.png") -%}
+{%- set contributorItems = replies.administrativeInformation.contributors if replies.administrativeInformation else [] -%}
+{%- set contacts = [] -%}
+{%- for item in contributorItems -%}
+  {%- if item.roles and "contactPerson" in (item.roles|map(attribute='_value')|list) -%}
+    {%- do contacts.append(item) -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- set relatedDmp = replies.administrativeInformation.dmpRelatedDmp if replies.administrativeInformation else None -%}
+{%- set relatedItems = relatedDmp.listRelatedDmp if relatedDmp and relatedDmp.listRelatedDmp else [] -%}
 <header>
-  <center>
-  <img src="{{ eu_header.data_url }}" height="78" width="160" class="eu-header" />
-  </center>
-  <h1>{{ ctx.project.name }}</h1>
-  <center>
-  <img src="{{ eu_flag.data_url }}" height="213" width="320" class="eu-flag" />
-  </center>
-  <h3>
-    Horizon Europe<br/>
-    Data Management Plan
-  </h3>
+  <div class="eu-branding">
+    <img src="{{ eu_header.data_url }}" height="49" width="100" class="eu-header" alt="European Commission" />
+    <img src="{{ eu_flag.data_url }}" height="80" width="120" class="eu-flag" alt="European Union" />
+  </div>
 
-  <div class="info">
-    <div class="version-info">
-      {% for version in dc.project.versions if version.uuid == dc.project.version %}
-        <div class="version">{{version.name}}</div>
+  <p class="dmp">Horizon Europe Data Management Plan</p>
+  <h1>{{ dc.project.name }}</h1>
+
+  <div class="dmp-info">
+    <dl>
+      {%- if globals.dmpTitle %}
+      <dt>DMP title</dt>
+      <dd>{{ globals.dmpTitle }}</dd>
+      {%- endif %}
+
+      <dt>Contact {{ "people" if (contacts|length > 1) else "person" }}</dt>
+      <dd>
+        {%- if contacts|length > 0 -%}
+          <ul>
+            {%- for contact in contacts -%}
+              <li>
+                {%- if contact.name and contact.name._value -%}
+                  <span class="contact-name">{{ contact.name._value }}</span>
+                {%- else -%}
+                  <span class="contact-name empty-value">(name not given)</span>
+                {%- endif -%}
+                {%- if contact.email and contact.email._value %}
+                  <br><a href="mailto:{{ contact.email._value }}">{{ contact.email._value }}</a>
+                {%- endif -%}
+                {%- if contact.orcid and contact.orcid._value %}
+                  <br>{{ globals.mdInline(contact.orcid._value) }}
+                {%- endif -%}
+                {%- if contact.affiliation and contact.affiliation._value %}
+                  <br>{{ globals.mdInline(contact.affiliation._value) }}
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <span class="empty-value">There is no contact person specified yet</span>
+        {%- endif -%}
+      </dd>
+
+      <dt>Related DMPs and documents</dt>
+      <dd>
+        {%- if relatedItems|length > 0 -%}
+          <ul>
+            {%- for item in relatedItems -%}
+              <li>
+                {%- if item.relatedDmp and item.relatedDmp._value -%}
+                  <span class="related-name">{{ item.relatedDmp._value }}</span>
+                {%- else -%}
+                  <span class="empty-value">(document not named)</span>
+                {%- endif -%}
+                {%- if item.dmpIdentifier2 and item.dmpIdentifier2._value %}
+                  <br>{{ item.dmpIdentifier2._value }}
+                {%- endif -%}
+                {%- if item.descriptionRelationship and item.descriptionRelationship._value %}
+                  <br>{{ item.descriptionRelationship._value }}
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- elif relatedDmp and relatedDmp._label -%}
+          {{ relatedDmp._label }}
+        {%- else -%}
+          <span class="empty-value">This question has not been answered yet</span>
+        {%- endif -%}
+      </dd>
+
+      <dt>Based on</dt>
+      <dd>{{ dc.pkg.name }}, {{ dc.pkg.version }} (<span class="package-id"><span class="organization-id">{{ dc.pkg.org_id }}</span>:<span class="km-id">{{ dc.pkg.km_id }}</span>:<span class="version">{{ dc.pkg.version }}</span></span>)</dd>
+
+      {%- if dc.current_phase and dc.current_phase.title %}
+      <dt>Project phase</dt>
+      <dd>{{ dc.current_phase.title }}</dd>
+      {%- endif %}
+
+      {% for version in dc.project.versions if version.uuid == ctx.project.versionUuid %}
+      <dt>Version</dt>
+      <dd>{{ version.name }} ({{ version.created_at|datetime_format("%d %b %Y") }})</dd>
       {% endfor %}
-      <div class="date">{{ dc.doc.created_at|datetime_format("%d %B %Y") }}</div>
-    </div>
+
+      <dt>Generated on</dt>
+      <dd>{{ dc.doc.created_at|datetime_format("%d %b %Y") }}</dd>
+    </dl>
 
     <p class="note">
-      Data Management Plan created in {{ dc.config.service_name }} &laquo;<a href="{{ dc.config.service_url }}" target="_blank">{{ dc.config.service_domain_name }}</a>&raquo;<br/>
-      using {{ dc.pkg.name }} v{{ dc.pkg.version }} (<span class="package-id"><span class="organization-id">{{ dc.pkg.org_id }}</span>:<span class="km-id">{{ dc.pkg.km_id }}</span>:<span class="version">{{ dc.pkg.version }}</span></span>).
+      Data Management Plan created in {{ dc.config.service_name }} &laquo;<a href="{{ dc.config.service_url }}" target="_blank">{{ dc.config.service_domain_name }}</a>&raquo;
     </p>
   </div>
 </header>
